@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from pathlib import Path
 from typing import Any, List
 from urllib import request
 
@@ -15,6 +16,11 @@ DEFAULT_TOPIC = (
     "under regularized white noise, combining regular and homotopy perturbation with rigorous "
     "mean-square convergence guarantees for peer-review-level validation."
 )
+
+PAPER_WORK_LTEXT_PATH = Path(__file__).resolve().parents[1] / "paper_work" / "paper_work.ltex"
+PAPER_WORK_TEX_PATH = Path(__file__).resolve().parents[1] / "paper_work" / "paper_work.tex"
+MAS_BEGIN_MARKER = "% MAS_GENERATED_BEGIN"
+MAS_END_MARKER = "% MAS_GENERATED_END"
 
 
 def _extract_json_block(text: str) -> str:
@@ -134,17 +140,64 @@ def _writing_fn(
     results_text = "\n".join(f"- {item[:200]}" for item in results)
     return _chat_completion(
         llm_cfg,
-        "You are an academic writing assistant preparing peer-review-ready drafts.",
+        "You are an academic writing assistant preparing peer-review-ready LaTeX drafts.",
         (
-            "Write a concise markdown draft with sections: Topic, Motivation, Evidence, "
+            "Write a concise LaTeX snippet with sections/subsections: Topic, Motivation, Evidence, "
             "Claim, Limitations, Next Experiments.\n"
             "Keep tone formal and reviewer-friendly.\n"
+            "Output pure LaTeX only, no markdown fences.\n"
             f"Topic:\n{topic}\n\n"
             f"Motivation:\n{motivation}\n\n"
             f"Verification results:\n{results_text}\n\n"
             f"Extracted claim:\n{theorem}\n"
         ),
     )
+
+
+def _ensure_paper_work_ltex(path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists():
+        return
+    path.write_text(
+        "\n".join(
+            [
+                "% Auto-generated aggregate display file for paper sections",
+                "% MAS_GENERATED_BEGIN",
+                "\\section*{MAS Generated Updates}",
+                "% (MAS will overwrite this block.)",
+                "% MAS_GENERATED_END",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
+def _upsert_mas_generated_block(path: Path, latex_snippet: str) -> None:
+    _ensure_paper_work_ltex(path)
+    content = path.read_text(encoding="utf-8")
+    block = "\n".join(
+        [
+            MAS_BEGIN_MARKER,
+            "\\section*{MAS Generated Updates}",
+            latex_snippet.strip(),
+            MAS_END_MARKER,
+        ]
+    )
+    if MAS_BEGIN_MARKER in content and MAS_END_MARKER in content:
+        start = content.index(MAS_BEGIN_MARKER)
+        end = content.index(MAS_END_MARKER) + len(MAS_END_MARKER)
+        updated = content[:start] + block + content[end:]
+    else:
+        updated = content.rstrip() + "\n\n" + block + "\n"
+    path.write_text(updated, encoding="utf-8")
+
+
+def _sync_ltex_to_tex(ltex_path: Path, tex_path: Path) -> None:
+    """Mirror display .ltex file to a compilable .tex entry file."""
+    _ensure_paper_work_ltex(ltex_path)
+    tex_path.parent.mkdir(parents=True, exist_ok=True)
+    tex_path.write_text(ltex_path.read_text(encoding="utf-8"), encoding="utf-8")
 
 
 def run_langgraph_loop(topic: str, llm_cfg: LLMConfig, max_retry: int = 2) -> ResearchState:
@@ -206,6 +259,10 @@ def main() -> None:
     )
     print("===== LangGraph Final Draft =====")
     print(final_state["paper_draft"])
+    _upsert_mas_generated_block(PAPER_WORK_LTEXT_PATH, final_state["paper_draft"])
+    _sync_ltex_to_tex(PAPER_WORK_LTEXT_PATH, PAPER_WORK_TEX_PATH)
+    print(f"===== Written To =====\n{PAPER_WORK_LTEXT_PATH}")
+    print(f"===== Compilable TeX =====\n{PAPER_WORK_TEX_PATH}")
 
 
 if __name__ == "__main__":

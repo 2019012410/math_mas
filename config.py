@@ -23,13 +23,15 @@ class LLMConfig:
 
 def load_llm_config() -> LLMConfig:
     """Load LLM credentials from environment variables."""
-    model = os.getenv("MAS_MODEL", "deepseek-chat")
-    api_key = os.getenv("MAS_API_KEY", "")
-    base_url = os.getenv("MAS_BASE_URL", "https://api.deepseek.com/v1")
+    model = os.getenv("MAS_MODEL", "deepseek-v4")
+    api_key = os.getenv("MAS_API_KEY") or os.getenv("DEEPSEEK_API_KEY", "")
+    base_url = os.getenv("MAS_BASE_URL") or os.getenv(
+        "DEEPSEEK_BASE_URL", "https://api.deepseek.com/v1"
+    )
 
     if not api_key:
         raise ValueError(
-            "Missing MAS_API_KEY. Set it in your environment before running."
+            "Missing API key. Set MAS_API_KEY or DEEPSEEK_API_KEY before running."
         )
 
     return LLMConfig(model=model, api_key=api_key, base_url=base_url)
