@@ -1,138 +1,182 @@
 # math_mas
 
-A Python-based multi-agent research workflow for exploring topics, generating ideas, validating implementation feasibility, and drafting research output.
+> An extensible multi-agent research workspace for turning open-ended questions into structured exploration, ideas, implementation checks, and research drafts.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.10+" />
-  <img src="https://img.shields.io/badge/AutoGen-Enabled-5C2D91?style=for-the-badge" alt="AutoGen enabled" />
-  <img src="https://img.shields.io/badge/LangGraph-Workflow-FF6B6B?style=for-the-badge" alt="LangGraph workflow" />
+  <a href="https://github.com/2019012410/math_mas">
+    <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.10+" />
+  </a>
+  <a href="https://github.com/microsoft/autogen">
+    <img src="https://img.shields.io/badge/AutoGen-Multi--Agent-5C2D91?style=flat-square" alt="AutoGen" />
+  </a>
+  <a href="https://github.com/langchain-ai/langgraph">
+    <img src="https://img.shields.io/badge/LangGraph-Orchestration-FF6B6B?style=flat-square" alt="LangGraph" />
+  </a>
+  <img src="https://img.shields.io/badge/Status-Early%20Development-orange?style=flat-square" alt="Early development" />
 </p>
 
-## Overview
+<p align="center">
+  <strong>Research faster. Think in parallel. Iterate with agents.</strong>
+</p>
 
-`math_mas` is an open-source research assistant scaffold built around a multi-agent collaboration pattern. It is designed to help teams or individuals move from a raw research question to a structured workflow that can:
+## Why math_mas?
 
-- explore relevant literature and background information,
-- generate promising research directions,
-- validate feasibility and implementation considerations,
-- produce draft summaries or research write-ups.
+Research workflows are rarely linear. A useful answer may require literature exploration, competing ideas, feasibility analysis, implementation planning, and several rounds of refinement.
 
-The project combines AutoGen for agent orchestration and LangGraph for workflow control, making the design easy to extend with new agents, tools, and domain-specific tasks.
+`math_mas` provides a lightweight foundation for coordinating specialized AI agents across these stages. It combines **AutoGen** for multi-agent collaboration with **LangGraph** for explicit workflow orchestration and state management.
 
-## Features
+## What it does
 
-- Multi-agent task decomposition
-- Research-oriented workflow orchestration
-- Topic exploration and context gathering
-- Idea generation and candidate evaluation
-- Feasibility checking and implementation review
-- Draft generation for reports or notes
-- Modular architecture for custom tools and agents
+- **Explore** — investigate a topic and collect relevant background information.
+- **Ideate** — generate and compare candidate research directions.
+- **Validate** — review assumptions, constraints, and implementation feasibility.
+- **Synthesize** — turn intermediate results into structured notes or research drafts.
+- **Extend** — add custom agents, prompts, tools, models, and workflow nodes.
 
-## Architecture
+## Workflow
 
-The project is organized around a small set of responsibilities:
-
-- Agent layer: Responsible for specialized roles and tasks
-- Workflow layer: Coordinates execution order, transitions, and state updates
-- Tool layer: Connects the workflow to external data sources or utilities
-- Output layer: Converts intermediate results into structured reports or drafts
-
-This separation makes it easier to extend the project for new domains without disrupting the overall execution flow.
-
-## Project Structure
-
-```text
-.
-├── README.md
-├── requirements.txt
-├── .env.example
-├── src/
-│   ├── agents/
-│   ├── workflows/
-│   ├── tools/
-│   ├── prompts/
-│   └── config/
-├── tests/
-├── notebooks/
-└── docs/
+```mermaid
+flowchart LR
+    A[Research Question] --> B[Topic Explorer]
+    B --> C[Idea Generator]
+    C --> D[Feasibility Reviewer]
+    D --> E[Draft Generator]
+    E --> F[Structured Research Output]
 ```
 
-> Note: the exact structure may evolve as the workflow grows. The main idea is to keep agent logic, workflow orchestration, and supporting tools clearly separated.
+Each stage can be adapted or replaced for a specific research domain. The workflow is intended to support iteration rather than produce a one-shot answer.
 
-## Getting Started
+## Core concepts
 
-### Prerequisites
+### Specialized agents
 
-- Python 3.10+
-- A working virtual environment
-- Access to an LLM provider or a compatible local model runtime
+Give each agent a focused responsibility, such as literature exploration, hypothesis generation, code review, or technical writing. Focused roles make prompts easier to evaluate and workflows easier to debug.
 
-### Installation
+### Explicit workflows
+
+Use LangGraph to define nodes, transitions, shared state, and review loops instead of relying on an opaque chain of model calls.
+
+### Tool and model flexibility
+
+The architecture is designed to accommodate different model providers and external tools. Keep provider-specific configuration separate from agent and workflow logic.
+
+### Structured outputs
+
+Pass typed or schema-oriented results between stages whenever possible. This makes downstream processing more reliable and simplifies evaluation.
+
+## Quick start
+
+### Requirements
+
+- Python 3.10 or newer
+- An LLM provider or compatible local model runtime
+- API credentials for the selected model provider, when required
+
+### Install
 
 ```bash
 git clone https://github.com/2019012410/math_mas.git
 cd math_mas
+
 python -m venv .venv
-source .venv/bin/activate  # macOS / Linux
-# or .venv\Scripts\activate  # Windows
+
+# macOS / Linux
+source .venv/bin/activate
+
+# Windows PowerShell
+# .venv\\Scripts\\Activate.ps1
+
 pip install -r requirements.txt
 ```
 
-### Configuration
+### Configure
 
-Create a local environment file or export the required environment variables before running the project.
-
-Example:
+Create a local `.env` file or export the environment variables required by your model provider:
 
 ```bash
 export OPENAI_API_KEY="your-api-key"
 ```
 
-If the project uses additional providers or settings, follow the configuration pattern used in the codebase and keep secrets out of version control.
+Keep credentials out of source control. If an `.env.example` file is available, use it as the configuration template.
 
-## Typical Workflow
+### Run
 
-1. Define a research topic or problem statement.
-2. Launch the exploration stage to gather background and relevant references.
-3. Generate candidate ideas or directions.
-4. Evaluate feasibility and implementation constraints.
-5. Produce a structured draft or next-step summary.
+The repository is currently an evolving scaffold. Use the project entry point and examples provided by the implementation, and adapt the command below to the available runner:
 
-## Development Guide
+```bash
+python -m <your_entrypoint>
+```
 
-- Keep agent responsibilities focused and explicit.
-- Use structured inputs and outputs between agents.
-- Prefer small, testable workflow nodes.
-- Log intermediate results for debugging and iteration.
-- Validate model outputs before passing them into downstream steps.
+## Project layout
 
-## Contributing
+```text
+.
+├── README.md
+├── requirements.txt
+├── src/
+│   ├── agents/       # Specialized agent roles
+│   ├── workflows/    # LangGraph workflow definitions
+│   ├── tools/        # External tools and integrations
+│   ├── prompts/      # Reusable prompt templates
+│   └── config/       # Runtime and model configuration
+├── tests/             # Tests and evaluation cases
+├── notebooks/         # Experiments and exploration
+└── docs/              # Extended documentation
+```
 
-Contributions are welcome. If you would like to improve this project, please open an issue or submit a pull request with a clear explanation of the change.
+> The layout is a suggested organization for the evolving project. Keep the actual implementation and documentation synchronized as new modules are added.
 
-Recommended contribution flow:
+## Example use cases
 
-1. Fork the repository
-2. Create a feature branch
-3. Make focused changes
-4. Add or update tests where appropriate
-5. Submit a pull request with a summary of the improvement
+`math_mas` can serve as a starting point for:
+
+- AI-assisted literature review
+- Mathematical problem exploration
+- Research idea generation
+- Experiment and implementation planning
+- Technical design review
+- Structured report and draft generation
+- Multi-agent workflow experimentation
+
+## Development principles
+
+- Keep agent responsibilities small and explicit.
+- Prefer deterministic workflow transitions over implicit chaining.
+- Validate model outputs before passing them to downstream agents.
+- Add retries, timeouts, and error handling around external calls.
+- Record intermediate state to make runs reproducible and debuggable.
+- Never commit API keys, private data, or model credentials.
 
 ## Roadmap
 
-Potential future directions include:
+- [ ] Add runnable end-to-end examples
+- [ ] Provide provider-agnostic model configuration
+- [ ] Add structured schemas for agent outputs
+- [ ] Add workflow evaluation and regression tests
+- [ ] Add observability for agent runs and token usage
+- [ ] Expand documentation with practical research recipes
 
-- richer agent roles for literature review, coding, and writing
-- configurable workflow templates
-- stronger validation and evaluation pipelines
-- more robust prompt and tool abstraction layers
-- documentation and examples for common research tasks
+## Contributing
+
+Contributions, ideas, and experiments are welcome.
+
+1. Open an issue to discuss a larger change.
+2. Fork the repository and create a focused branch.
+3. Add tests or examples for behavior you change.
+4. Keep prompts, workflows, and provider configuration modular.
+5. Open a pull request with context, trade-offs, and validation steps.
 
 ## License
 
-This project does not currently declare a license. If you plan to use or distribute it beyond personal experimentation, please confirm the repository's licensing status before publishing or sharing the code.
+No open-source license has been declared for this repository yet. Until a license is added, please do not assume that the code may be redistributed or used commercially.
+
+## Acknowledgements
+
+This project builds on the ideas and tooling provided by:
+
+- [AutoGen](https://github.com/microsoft/autogen)
+- [LangGraph](https://github.com/langchain-ai/langgraph)
 
 ## Contact
 
-For questions or collaboration opportunities, open an issue in this repository.
+For questions, suggestions, or collaboration, please open an issue in this repository.
