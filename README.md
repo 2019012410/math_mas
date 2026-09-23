@@ -1,108 +1,138 @@
 # math_mas
 
-> 基于 AutoGen 与 LangGraph 的多智能体数学/文献研究工作流脚手架。
+A Python-based multi-agent research workflow for exploring topics, generating ideas, validating implementation feasibility, and drafting research output.
 
-## 项目简介
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.10+" />
+  <img src="https://img.shields.io/badge/AutoGen-Enabled-5C2D91?style=for-the-badge" alt="AutoGen enabled" />
+  <img src="https://img.shields.io/badge/LangGraph-Workflow-FF6B6B?style=for-the-badge" alt="LangGraph workflow" />
+</p>
 
-`math_mas` 用于搭建面向研究任务的多智能体协作流程，覆盖文献探索、研究想法生成、实现检查以及草稿生成等环节。
+## Overview
 
-项目当前定位为一个可扩展的研究工作流脚手架，便于后续接入不同的大语言模型、工具和领域任务。
+`math_mas` is an open-source research assistant scaffold built around a multi-agent collaboration pattern. It is designed to help teams or individuals move from a raw research question to a structured workflow that can:
 
-## 主要能力
+- explore relevant literature and background information,
+- generate promising research directions,
+- validate feasibility and implementation considerations,
+- produce draft summaries or research write-ups.
 
-- **多智能体协作**：通过多个职责明确的智能体分工完成研究任务。
-- **文献探索**：支持围绕研究主题收集、整理和分析相关信息。
-- **想法生成**：辅助提出研究方向、问题定义和可行的实验思路。
-- **实现检查**：对研究想法或实现方案进行结构化检查。
-- **草稿生成**：将研究过程中的结果整理为结构化草稿。
-- **流程编排**：结合 AutoGen 与 LangGraph 构建可组合、可追踪的工作流。
+The project combines AutoGen for agent orchestration and LangGraph for workflow control, making the design easy to extend with new agents, tools, and domain-specific tasks.
 
-## 技术栈
+## Features
 
-- Python
-- AutoGen
-- LangGraph
+- Multi-agent task decomposition
+- Research-oriented workflow orchestration
+- Topic exploration and context gathering
+- Idea generation and candidate evaluation
+- Feasibility checking and implementation review
+- Draft generation for reports or notes
+- Modular architecture for custom tools and agents
 
-## 项目结构
+## Architecture
 
-项目结构会随着工作流模块的完善持续演进。建议将不同智能体、图流程、工具以及输出模板按职责拆分，以便于维护和扩展。
+The project is organized around a small set of responsibilities:
 
-## 环境要求
+- Agent layer: Responsible for specialized roles and tasks
+- Workflow layer: Coordinates execution order, transitions, and state updates
+- Tool layer: Connects the workflow to external data sources or utilities
+- Output layer: Converts intermediate results into structured reports or drafts
 
-- Python 3.10 或更高版本（推荐使用虚拟环境）
-- 可用的大语言模型 API 或本地模型服务
-- AutoGen 与 LangGraph 所需的依赖
+This separation makes it easier to extend the project for new domains without disrupting the overall execution flow.
 
-## 快速开始
+## Project Structure
 
-### 1. 克隆项目
+```text
+.
+├── README.md
+├── requirements.txt
+├── .env.example
+├── src/
+│   ├── agents/
+│   ├── workflows/
+│   ├── tools/
+│   ├── prompts/
+│   └── config/
+├── tests/
+├── notebooks/
+└── docs/
+```
+
+> Note: the exact structure may evolve as the workflow grows. The main idea is to keep agent logic, workflow orchestration, and supporting tools clearly separated.
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.10+
+- A working virtual environment
+- Access to an LLM provider or a compatible local model runtime
+
+### Installation
 
 ```bash
 git clone https://github.com/2019012410/math_mas.git
 cd math_mas
-```
-
-### 2. 创建并启用虚拟环境
-
-```bash
 python -m venv .venv
-
-# macOS / Linux
-source .venv/bin/activate
-
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
-```
-
-### 3. 安装依赖
-
-如果项目中提供了依赖文件，请执行：
-
-```bash
+source .venv/bin/activate  # macOS / Linux
+# or .venv\Scripts\activate  # Windows
 pip install -r requirements.txt
 ```
 
-如果暂时没有依赖文件，请根据实际使用的 AutoGen、LangGraph 版本安装对应依赖，并配置模型服务所需的环境变量。
+### Configuration
 
-### 4. 配置模型服务
+Create a local environment file or export the required environment variables before running the project.
 
-请根据所使用的模型提供商设置相应的 API 密钥和模型配置。建议将敏感信息写入本地 `.env` 文件或系统环境变量，不要直接提交到 Git 仓库。
-
-示例：
+Example:
 
 ```bash
 export OPENAI_API_KEY="your-api-key"
 ```
 
-> 实际环境变量名称和启动命令请以项目中的实现为准。
+If the project uses additional providers or settings, follow the configuration pattern used in the codebase and keep secrets out of version control.
 
-## 使用流程
+## Typical Workflow
 
-典型的研究流程如下：
+1. Define a research topic or problem statement.
+2. Launch the exploration stage to gather background and relevant references.
+3. Generate candidate ideas or directions.
+4. Evaluate feasibility and implementation constraints.
+5. Produce a structured draft or next-step summary.
 
-1. 输入研究主题或待解决的问题。
-2. 由研究智能体进行文献和背景信息探索。
-3. 由构思智能体提出候选研究想法。
-4. 对候选想法进行可行性与实现检查。
-5. 生成结构化研究草稿或下一步行动建议。
+## Development Guide
 
-## 开发建议
+- Keep agent responsibilities focused and explicit.
+- Use structured inputs and outputs between agents.
+- Prefer small, testable workflow nodes.
+- Log intermediate results for debugging and iteration.
+- Validate model outputs before passing them into downstream steps.
 
-- 为每个智能体定义清晰的职责、输入和输出格式。
-- 使用 LangGraph 管理有向流程、状态和节点之间的依赖关系。
-- 为外部工具调用增加超时、重试和错误处理。
-- 对模型输出进行结构化校验，避免不完整结果进入后续流程。
-- 不要在代码或提交记录中写入 API 密钥等敏感信息。
+## Contributing
 
-## 贡献
+Contributions are welcome. If you would like to improve this project, please open an issue or submit a pull request with a clear explanation of the change.
 
-欢迎提交 Issue 或 Pull Request 来改进项目。建议在提交代码前：
+Recommended contribution flow:
 
-1. 明确描述变更目的和影响范围。
-2. 为新增流程或智能体补充使用说明。
-3. 对关键逻辑增加测试或示例。
-4. 确认没有提交密钥、个人数据或其他敏感信息。
+1. Fork the repository
+2. Create a feature branch
+3. Make focused changes
+4. Add or update tests where appropriate
+5. Submit a pull request with a summary of the improvement
 
-## 许可证
+## Roadmap
 
-当前仓库尚未声明开源许可证。除非仓库后续添加明确的许可证文件，否则请勿默认将本项目用于再发布或商业用途。
+Potential future directions include:
+
+- richer agent roles for literature review, coding, and writing
+- configurable workflow templates
+- stronger validation and evaluation pipelines
+- more robust prompt and tool abstraction layers
+- documentation and examples for common research tasks
+
+## License
+
+This project does not currently declare a license. If you plan to use or distribute it beyond personal experimentation, please confirm the repository's licensing status before publishing or sharing the code.
+
+## Contact
+
+For questions or collaboration opportunities, open an issue in this repository.
